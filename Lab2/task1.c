@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     int* values = malloc(sizeof(int)*MAX_TABLE_SIZE);
     generateTable(num, values);
     printTable(num, values);
+    free(values);
     return 0;
 }
 void generateTable(int num, int *table)
