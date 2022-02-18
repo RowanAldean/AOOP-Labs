@@ -8,15 +8,18 @@ private:
     unsigned int lives;
 
 public:
+    Cat();
     Cat(std::string name);
     Cat(std::string name, unsigned int lives);
     ~Cat();
 
-    std::string getName() const{
+    std::string getName() const
+    {
         return name;
     }
 
-    unsigned int getLives() const{
+    unsigned int getLives() const
+    {
         return lives;
     }
 
