@@ -13,3 +13,20 @@ Cat::~Cat(){
     std::cout << "Destructor called... \n";
 }
 
+void Cat::setName(std::string const name){
+    std::cout << "setName called... \n";
+    this->name = name;
+}
+
+void Cat::setLives(unsigned int const lives){
+    std::cout << "setLives called... \n";
+    if(lives >= this->lives){
+        return;
+    }
+    else if ((this->lives > 0) && (lives == 0))
+    {
+        setName("The Cat formerly known as " + getName());
+    }
+    
+    this->lives = lives;
+}

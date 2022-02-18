@@ -19,6 +19,10 @@ public:
     unsigned int getLives() const{
         return lives;
     }
+
+    void setName(std::string const name);
+
+    void setLives(unsigned int const lives);
 };
 
 #endif
