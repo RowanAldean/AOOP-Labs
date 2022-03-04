@@ -33,6 +33,8 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const Cat &cat);
 
     friend bool operator==(const Cat& lhs, const Cat& rhs);
+    
+    friend bool operator<(const Cat &lhs, const Cat &rhs);
 };
 
 namespace std

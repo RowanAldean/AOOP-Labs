@@ -46,3 +46,19 @@ bool operator==(const Cat& lhs, const Cat& rhs){
     }
     return false;
 }
+
+bool operator<(const Cat &lhs, const Cat &rhs){
+    if(lhs.name == rhs.name){
+        if(lhs.lives < rhs.lives){
+            return true;
+        }
+        else{
+            return false;
+        }
+    } else if(lhs.name < rhs.name){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
