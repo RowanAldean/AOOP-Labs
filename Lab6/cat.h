@@ -46,12 +46,7 @@ namespace std
         {
             std::stringstream stream;
             stream << obj;
-            // What exactly is he doing to get a unique string and thus the hashval starting w/ 4?
-            // char c;
-            // while(stream >> c){
-            //     c++;
-            //     stream << c;
-            // }
+            
             size_t output = std::hash<std::string>{}(stream.str());
             // integer and return it...
             return output;
