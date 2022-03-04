@@ -10,8 +10,7 @@ int main(int argc, char *argv[])
     unique_cats.insert(Cat("Toothless ", 13));
     unique_cats.insert(Cat("Garfield ", 42));
     unique_cats.insert(Cat("Garfield ", 42));
-    std::cout << std::endl
-              << "Unique Cats" << std::endl;
+    std::cout << "Unique Cats" << std::endl;
     for (auto it = unique_cats.begin(); it != unique_cats.end(); it++)
     {
         std::cout << *it << std::endl;
