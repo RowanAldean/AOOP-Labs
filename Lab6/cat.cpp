@@ -39,3 +39,10 @@ std::ostream &operator<<(std::ostream &os, const Cat& cat){
     os << cat.name << cat.lives;
     return os;
 }
+
+bool operator==(const Cat& lhs, const Cat& rhs){
+    if((lhs.name == rhs.name) && (lhs.lives == rhs.lives)){
+        return true;
+    }
+    return false;
+}
