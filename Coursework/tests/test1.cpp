@@ -52,7 +52,7 @@ SCENARIO("The action program argument can be parsed correctly", "[args]") {
 
     WHEN("the value of the program argument is 'create'") {
 
-      Argv argvObj({"test", "--action", "create"});
+      Argv argvObj({"test", "--action", "CREATE"});
       auto **argv = argvObj.argv();
       auto argc = argvObj.argc();
 
@@ -75,7 +75,7 @@ SCENARIO("The action program argument can be parsed correctly", "[args]") {
 
     WHEN("the value of the program argument is 'read'") {
 
-      Argv argvObj({"test", "--action", "read"});
+      Argv argvObj({"test", "--action", "ReAD"});
       auto **argv = argvObj.argv();
       auto argc = argvObj.argc();
 
@@ -98,7 +98,7 @@ SCENARIO("The action program argument can be parsed correctly", "[args]") {
 
     WHEN("the value of the program argument is 'update'") {
 
-      Argv argvObj({"test", "--action", "update"});
+      Argv argvObj({"test", "--action", "UpDaTe"});
       auto **argv = argvObj.argv();
       auto argc = argvObj.argc();
 
@@ -121,7 +121,7 @@ SCENARIO("The action program argument can be parsed correctly", "[args]") {
 
     WHEN("the value of the program argument is a 'delete'") {
 
-      Argv argvObj({"test", "--action", "delete"});
+      Argv argvObj({"test", "--action", "DELETE"});
       auto **argv = argvObj.argv();
       auto argc = argvObj.argc();
 

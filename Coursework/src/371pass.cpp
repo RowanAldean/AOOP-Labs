@@ -34,12 +34,14 @@
 //
 // Example:
 //  int main(int argc, char *argv[]) { return App::run(argc, argv); }
-int App::run(int argc, char *argv[]) {
+int App::run(int argc, char *argv[])
+{
   auto options = App::cxxoptsSetup();
   auto args = options.parse(argc, argv);
 
   // Print the help usage if requested
-  if (args.count("help")) {
+  if (args.count("help"))
+  {
     std::cout << options.help() << '\n';
     return 0;
   }
@@ -51,7 +53,8 @@ int App::run(int argc, char *argv[]) {
   // wObj.load(db);
 
   const Action a = parseActionArgument(args);
-  switch (a) {
+  switch (a)
+  {
   case Action::CREATE:
     throw std::runtime_error("create not implemented");
     break;
@@ -80,7 +83,8 @@ int App::run(int argc, char *argv[]) {
 // Example:
 //  auto options = App::cxxoptsSetup();
 //  auto args = options.parse(argc, argv);
-cxxopts::Options App::cxxoptsSetup() {
+cxxopts::Options App::cxxoptsSetup()
+{
   cxxopts::Options cxxopts("371pass", "Student ID: " + STUDENT_NUMBER + "\n");
 
   cxxopts.add_options()(
@@ -126,9 +130,32 @@ cxxopts::Options App::cxxoptsSetup() {
 //  auto options = App::cxxoptsSetup();
 //  auto args = options.parse(argc, argv);
 //  App::Action action = parseActionArgument(args);
-App::Action App::parseActionArgument(cxxopts::ParseResult &args) {
+App::Action App::parseActionArgument(cxxopts::ParseResult &args)
+{
   std::string input = args["action"].as<std::string>();
-  return Action::READ;
+  std::transform(input.begin(), input.end(), input.begin(),
+                 [](unsigned char c)
+                 { return std::tolower(c); });
+  if (input == "read")
+  {
+    return Action::READ;
+  }
+  else if (input == "create")
+  {
+    return Action::CREATE;
+  }
+  else if (input == "delete")
+  {
+    return Action::DELETE;
+  }
+  else if (input == "update")
+  {
+    return Action::UPDATE;
+  }
+  else
+  {
+    throw std::invalid_argument("action");
+  }
 }
 
 // TODO Write a function, getJSON, that returns a std::string containing the
@@ -142,7 +169,8 @@ App::Action App::parseActionArgument(cxxopts::ParseResult &args) {
 // Example:
 //  Wallet wObj{};
 //  std::cout << getJSON(wObj);
-std::string App::getJSON(Wallet &wObj) { 
+std::string App::getJSON(Wallet &wObj)
+{
   return "{}";
   // Only uncomment this once you have implemented the functions used!
   // return wObj.str();
@@ -160,7 +188,8 @@ std::string App::getJSON(Wallet &wObj) {
 //  Wallet wObj{};
 //  std::string c = "category argument value";
 //  std::cout << getJSON(wObj, c);
-std::string App::getJSON(Wallet &wObj, const std::string &c) {
+std::string App::getJSON(Wallet &wObj, const std::string &c)
+{
   return "{}";
   // Only uncomment this once you have implemented the functions used!
   // auto cObj = wObj.getCategory(c);
@@ -181,7 +210,8 @@ std::string App::getJSON(Wallet &wObj, const std::string &c) {
 //  std::string i = "item argument value";
 //  std::cout << getJSON(wObj, c, i);
 std::string App::getJSON(Wallet &wObj, const std::string &c,
-                         const std::string &i) {
+                         const std::string &i)
+{
   return "{}";
   // Only uncomment this once you have implemented the functions used!
   // auto cObj = wObj.getCategory(c);
@@ -204,7 +234,8 @@ std::string App::getJSON(Wallet &wObj, const std::string &c,
 //  std::string e = "entry argument value";
 //  std::cout << getJSON(wObj, c, i, e);
 std::string App::getJSON(Wallet &wObj, const std::string &c,
-                         const std::string &i, const std::string &e) {
+                         const std::string &i, const std::string &e)
+{
   return "{}";
   // Only uncomment this once you have implemented the functions used!
   // auto cObj = wObj.getCategory(c);
