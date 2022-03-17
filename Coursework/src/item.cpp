@@ -35,7 +35,7 @@ unsigned int Item::size()
 //  auto empty = iObj.empty();
 bool Item::empty()
 {
-    return (entries.size() == 0 ? true : false);
+    return entries.empty();
 };
 // TODO Write a function, setIdent, that takes one parameter, a string for a new
 //  Item identifier, and updates the member variable. It returns nothing.
@@ -96,7 +96,7 @@ std::string Item::getEntry(std::string keyToGet)
     }
     else
     {
-        throw EntryDoesntExistException(keyToGet, identifier);
+        throw DoesntExistException<Item>(keyToGet, identifier);
     }
 }
 // TODO Write a function, deleteEntry, that takes one parameter, an entry
@@ -118,7 +118,7 @@ bool Item::deleteEntry(std::string keyToDelete)
     }
     else
     {
-        throw EntryDoesntExistException(keyToDelete, identifier);
+        throw DoesntExistException<Item>(keyToDelete, identifier);
     }
 }
 // TODO Write an == operator overload for the Item class, such that two
@@ -137,6 +137,17 @@ bool operator==(const Item& lhs, const Item& rhs){
         return true;
     }
     return false;
+}
+
+Item Item::operator+=(const Item& rhs){
+    entries.insert(rhs.entries.begin(), rhs.entries.end());
+    return *this;
+}
+
+//Implementing addition for items. The item on the left hand side will keep it's entry values.
+Item operator+(Item base, const Item& newsource){
+    base += newsource;
+    return base;
 }
 
 // TODO Write a function, str, that takes no parameters and returns a

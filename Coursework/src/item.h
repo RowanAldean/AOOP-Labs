@@ -54,24 +54,29 @@ public:
     friend bool operator==(const Item &lhs, const Item &rhs);
     
     std::string str();
+
+    Item operator+=(const Item& rhs);
+    
+    friend Item operator+(Item lhs, const Item &rhs);
 };
 
-class EntryDoesntExistException : public std::out_of_range
+template<typename T>
+class DoesntExistException : public std::out_of_range
 {
 private:
-    std::string entryName;
-    std::string itemName;
+    std::string searchInput;
+    std::string containerName;
 
 public:
-    EntryDoesntExistException(std::string entryName, std::string itemName) : out_of_range("Entry key is out of range"), entryName(entryName),
-                                                                             itemName(itemName) {}
+    DoesntExistException(const std::string searched, const std::string parentContainer) : out_of_range("Entry key is out of range"), searchInput(searched),
+                                                                             containerName(parentContainer) {}
 
     virtual void describe(std::ostream &os) const
     {
-        os << "The following entry does not exist:"
+        os << "The following search criterion does not exist:"
            << "\n"
-           << "Item: " << itemName
-           << "Entry key: " << entryName;
+           << typeid(T).name() << ": " << containerName
+           << "Entry key: " << searchInput;
     }
 };
 
