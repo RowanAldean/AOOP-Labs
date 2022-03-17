@@ -230,7 +230,8 @@ void Wallet::load(const std::string filename)
     json myjson;
     databaseFile >> myjson;
     //So this is 1 category
-    std::cout << myjson.items().begin() << "is the first category element" << "\n";
+    std::cout << myjson.items().begin() << "is the first category element"
+              << "\n";
 
     for (auto &el : myjson.items())
     {
@@ -238,19 +239,22 @@ void Wallet::load(const std::string filename)
         // el.value is the item list
         Category newCat(el.key());
         json categories = el.value();
-        for(auto &cat : categories.items()){
-            //Item id is the el.key 
+        for (auto &cat : categories.items())
+        {
+            //Item id is the el.key
             //el.value is the key:value entries
             //So we can use add entry with the key and val as args.
             Item newItem(cat.key());
             json items = cat.value();
-            for(auto &entry: items.items()){
+            for (auto &entry : items.items())
+            {
                 newItem.addEntry(entry.key(), entry.value());
             }
             newCat.addItem(newItem);
         }
         addCategory(newCat);
     }
+    databaseFile.close();
 }
 
 // TODO Write a function ,save, that takes one parameter, the path of the file
@@ -262,10 +266,20 @@ void Wallet::load(const std::string filename)
 //  wObj.load("database.json");
 //  ...
 //  wObj.save("database.json");
-void Wallet::save(const std::string filename){
+void Wallet::save(const std::string filename)
+{
     std::ofstream newfile;
     newfile.open(filename);
-    newfile << str();
+    std::cout << "the file has opened"
+              << "\n";
+    try
+    {
+        newfile << str();
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "This is what " << e.what() << "\n";
+    }
     newfile.close();
 }
 
@@ -278,8 +292,10 @@ void Wallet::save(const std::string filename){
 //  if(wObj1 == wObj2) {
 //    ...
 //  }
-bool operator==(const Wallet& lhs, const Wallet& rhs){
-    if((lhs.categoryList == rhs.categoryList)){
+bool operator==(const Wallet &lhs, const Wallet &rhs)
+{
+    if ((lhs.categoryList == rhs.categoryList))
+    {
         return true;
     }
     return false;
@@ -294,10 +310,17 @@ bool operator==(const Wallet& lhs, const Wallet& rhs){
 // Example:
 //  Wallet wObj{};
 //  std::string s = wObj.str();
-std::string Wallet::str(){
-    std::string output;
-    for(Category& cat: categoryList){
+std::string Wallet::str()
+{
+    std::string output = "{";
+    for (Category &cat : categoryList)
+    {
+        output += "\"" + cat.getIdent() + "\"" + ":{"; 
         output += cat.str();
+        output += "},";
     }
+    output.pop_back(); //remove the trailing comma
+    output += "}";
+    std::cout << "The string output is: " << output << "\n";
     return output;
 }

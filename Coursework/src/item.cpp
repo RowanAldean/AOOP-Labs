@@ -160,5 +160,6 @@ Item operator+(Item base, const Item& newsource){
 //  std::string s = iObj.str();
 std::string Item::str(){
     json j_map(entries);
+    std::cout << identifier << " item has a string: " << j_map.dump() << std::endl;
     return j_map.dump();
 }

@@ -223,10 +223,13 @@ Category operator+(Category base, const Category& newsource){
 //  Category cObj{"categoryIdent"};
 //  std::string s = cObj.str();
 std::string Category::str(){
-    std::string nonjsonString;
+    std::string output;
     for(Item& something: itemList){
-        nonjsonString += something.str();
+        output += "\"" + something.getIdent() + "\"" + ":";
+        output += something.str();
+        output += ",";
     }
-    json j = json::parse(nonjsonString);
-    return j.dump();
+    output.pop_back();
+    std::cout << identifier << " category has a string: " << output << std::endl;
+    return output;
 }
