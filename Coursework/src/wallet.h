@@ -41,7 +41,7 @@ public:
 
     friend bool operator==(const Wallet &lhs, const Wallet &rhs);
 
-    std::string str() const;
+    std::string str();
 };
 
 #endif // WALLET_H

@@ -224,15 +224,32 @@ bool Wallet::deleteCategory(const std::string &catIdent)
 //  Wallet wObj{};
 //  wObj.load("database.json");
 
-void Wallet::load(std::string filename)
+void Wallet::load(const std::string filename)
 {
     std::ifstream databaseFile(filename, std::ifstream::binary);
     json myjson;
     databaseFile >> myjson;
+    //So this is 1 category
+    std::cout << myjson.items().begin() << "is the first category element" << "\n";
 
     for (auto &el : myjson.items())
     {
-        std::cout << el.key() << " : " << el.value() << "\n";
+        // Category is el.key
+        // el.value is the item list
+        Category newCat(el.key());
+        json categories = el.value();
+        for(auto &cat : categories.items()){
+            //Item id is the el.key 
+            //el.value is the key:value entries
+            //So we can use add entry with the key and val as args.
+            Item newItem(cat.key());
+            json items = cat.value();
+            for(auto &entry: items.items()){
+                newItem.addEntry(entry.key(), entry.value());
+            }
+            newCat.addItem(newItem);
+        }
+        addCategory(newCat);
     }
 }
 
@@ -245,6 +262,12 @@ void Wallet::load(std::string filename)
 //  wObj.load("database.json");
 //  ...
 //  wObj.save("database.json");
+void Wallet::save(const std::string filename){
+    std::ofstream newfile;
+    newfile.open(filename);
+    newfile << str();
+    newfile.close();
+}
 
 // TODO Write an == operator overload for the Wallet class, such that two
 //  Wallet objects are equal only if they have the exact same data.
@@ -255,6 +278,12 @@ void Wallet::load(std::string filename)
 //  if(wObj1 == wObj2) {
 //    ...
 //  }
+bool operator==(const Wallet& lhs, const Wallet& rhs){
+    if((lhs.categoryList == rhs.categoryList)){
+        return true;
+    }
+    return false;
+}
 
 // TODO Write a function, str, that takes no parameters and returns a
 //  std::string of the JSON representation of the data in the Wallet.
@@ -265,3 +294,10 @@ void Wallet::load(std::string filename)
 // Example:
 //  Wallet wObj{};
 //  std::string s = wObj.str();
+std::string Wallet::str(){
+    std::string output;
+    for(Category& cat: categoryList){
+        output += cat.str();
+    }
+    return output;
+}
