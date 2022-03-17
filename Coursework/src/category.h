@@ -2,7 +2,7 @@
 // CSC371 Advanced Object Oriented Programming (2021/22)
 // Department of Computer Science, Swansea University
 //
-// Author: <STUDENT NUMBER>
+// Author: 973765
 //
 // Canvas: https://canvas.swansea.ac.uk/courses/24793
 // -----------------------------------------------------
@@ -13,8 +13,38 @@
 #ifndef CATEGORY_H
 #define CATEGORY_H
 
-class Category {
+#include <string>
+#include <vector>
+#include <algorithm>
+#include "item.h"
+class Category
+{
+private:
+    std::string identifier;
+    std::vector<Item> itemList;
 
+public:
+    Category(std::string identifier);
+
+    unsigned int size();
+
+    bool empty();
+
+    std::string getIdent();
+
+    void setIdent(std::string newIdent);
+
+    Item &newItem(std::string itemIdent);
+
+    bool addItem(Item &newItem);
+
+    Item &getItem(const std::string itemToGet);
+
+    bool deleteItem(const std::string itemToDelete);
+
+    friend bool operator==(const Category &lhs, const Category &rhs);
+
+    std::string str();
 };
 
 #endif // CATEGORY_H
