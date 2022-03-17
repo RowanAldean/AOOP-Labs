@@ -203,6 +203,17 @@ bool operator==(const Category& lhs, const Category& rhs){
     return false;
 }
 
+Category Category::operator+=(const Category& rhs){
+    itemList.insert(rhs.itemList.end(), rhs.itemList.begin(), rhs.itemList.end());
+    return *this;
+}
+
+//Implementing addition for items. The item on the left hand side will keep it's entry values.
+Category operator+(Category base, const Category& newsource){
+    base += newsource;
+    return base;
+}
+
 // TODO Write a function, str, that takes no parameters and returns a
 //  std::string of the JSON representation of the data in the Category.
 //

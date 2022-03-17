@@ -75,8 +75,8 @@ public:
     {
         os << "The following search criterion does not exist:"
            << "\n"
-           << typeid(T).name() << ": " << containerName
-           << "Entry key: " << searchInput;
+           << typeid(T).name() << "  container: " << containerName
+           << "Search query: " << searchInput;
     }
 };
 

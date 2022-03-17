@@ -2,7 +2,7 @@
 // CSC371 Advanced Object Oriented Programming (2021/22)
 // Department of Computer Science, Swansea University
 //
-// Author: <STUDENT NUMBER>
+// Author: 973765
 //
 // Canvas: https://canvas.swansea.ac.uk/courses/24793
 // -----------------------------------------------------
@@ -13,9 +13,35 @@
 
 #ifndef WALLET_H
 #define WALLET_H
+#include <fstream>
+#include "category.h"
+class Wallet
+{
+private:
+    std::vector<Category> categoryList;
 
-class Wallet {
-  
+public:
+    Wallet();
+
+    unsigned int size() const;
+
+    bool empty() const;
+
+    Category &newCategory(const std::string catIdent);
+
+    bool addCategory(Category &catToAdd);
+
+    Category getCategory(const std::string &catIdent) const;
+
+    bool deleteCategory(const std::string &catIdent);
+
+    void load(const std::string fileName);
+
+    void save(const std::string fileName);
+
+    friend bool operator==(const Wallet &lhs, const Wallet &rhs);
+
+    std::string str() const;
 };
 
 #endif // WALLET_H

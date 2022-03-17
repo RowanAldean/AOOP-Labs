@@ -45,6 +45,10 @@ public:
     friend bool operator==(const Category &lhs, const Category &rhs);
 
     std::string str();
+
+    Category operator+=(const Category& rhs);
+    
+    friend Category operator+(Category lhs, const Category &rhs);
 };
 
 #endif // CATEGORY_H

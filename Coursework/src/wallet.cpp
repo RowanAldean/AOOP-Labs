@@ -15,19 +15,28 @@
 // Example:
 //  Wallet wObj{};
 
+Wallet::Wallet() : categoryList() {}
+
 // TODO Write a function, size, that takes no parameters and returns an unsigned
 //  int of the number of categories in the Wallet contains.
 //
 // Example:
 //  Wallet wObj{};
 //  auto size = wObj.size();
-
+unsigned int Wallet::size() const
+{
+    return categoryList.size();
+}
 // TODO Write a function, empty, that takes no parameters and returns true
 //  if the number of categories in the Wallet is zero, false otherwise.
 //
 // Example:
 //  Wallet wwObj{};
 //  auto isEmpty = wObj.empty();
+bool Wallet::empty() const
+{
+    return categoryList.empty();
+}
 
 // TODO Write a function, newCategory, that takes one parameter, a category
 //  identifier, and returns the Category object as a reference. If an object
@@ -38,6 +47,32 @@
 // Example:
 //  Wallet wObj{};
 //  wObj.newCategory("categoryIdent");
+Category &Wallet::newCategory(const std::string catIdent)
+{
+    auto it = std::find_if(categoryList.begin(), categoryList.end(),
+                           [&catIdent](Category &someCategory)
+                           { return someCategory.getIdent() == catIdent; });
+    if (it != categoryList.end())
+    {
+        //found it
+        auto index = std::distance(categoryList.begin(), it);
+        return categoryList.at(index);
+    }
+    else
+    {
+        //doesn't exist
+        Category newCategoryMade(catIdent);
+        try
+        {
+            categoryList.push_back(newCategoryMade);
+            return categoryList.back();
+        }
+        catch (const std::exception &ex)
+        {
+            throw std::runtime_error("Category cannot be inserted into this wallet for some reason.");
+        }
+    }
+}
 
 // TODO Write a function, addCategory, that takes one parameter, a Category
 //  object, and returns true if the object was successfully inserted. If an
@@ -50,6 +85,33 @@
 //  Category cObj{"categoryIdent"};
 //  wObj.addCategory(cObj);
 
+bool Wallet::addCategory(Category &newCat)
+{
+    auto it = std::find(categoryList.begin(), categoryList.end(), newCat);
+    if (it != categoryList.end())
+    {
+        //found it
+        auto index = std::distance(categoryList.begin(), it);
+        newCat += categoryList.at(index);
+        // I implemented addition between items to merge entry lists together and retain the values for the lhs.
+        categoryList.at(index) = newCat;
+        //The above keeps the newItem values (if there are duplicates), otherwise combines the entry lists.
+        return false;
+    }
+    else
+    {
+        try
+        {
+            categoryList.push_back(newCat);
+        }
+        catch (const std::exception &ex)
+        {
+            throw std::runtime_error("Item cannot be inserted into this category for some reason.");
+        }
+        return true;
+    }
+}
+
 // TODO Write a function, getCategory, that takes one parameter, a Category
 //  identifier and returns the Category. If no Category exists, throw an
 //  appropriate exception.
@@ -59,6 +121,23 @@
 //  wObj.newCategory("categoryIdent");
 //  auto cObj = wObj.getCategory("categoryIdent");
 
+Category Wallet::getCategory(const std::string &catIdent) const
+{
+    auto it = std::find_if(categoryList.begin(), categoryList.end(),
+                           [catIdent](Category someCategory)
+                           { return someCategory.getIdent() == catIdent; });
+    if (it != categoryList.end())
+    {
+        //found it
+        auto index = std::distance(categoryList.begin(), it);
+        return categoryList.at(index);
+    }
+    else
+    {
+        throw DoesntExistException<Wallet>(catIdent, "Wallet");
+    }
+}
+
 // TODO Write a function, deleteCategory, that takes one parameter, a Category
 //  identifier, and deletes it from the container, and returns true if the
 //  Category was deleted. If no Category exists, throw an appropriate exception.
@@ -67,6 +146,23 @@
 //  Wallet wObj{};
 //  wObj.newCategory("categoryIdent");
 //  wObj.deleteCategory("categoryIdent");
+
+bool Wallet::deleteCategory(const std::string &catIdent)
+{
+    auto it = std::find_if(categoryList.begin(), categoryList.end(),
+                           [catIdent](Category someCategory)
+                           { return someCategory.getIdent() == catIdent; });
+    if (it != categoryList.end())
+    {
+        //found it
+        categoryList.erase(it);
+        return true;
+    }
+    else
+    {
+        throw DoesntExistException<Wallet>(catIdent, "Wallet");
+    }
+}
 
 // TODO Write a function, load, that takes one parameter, a std::string,
 //  containing the filename for the database. Open the file, read the contents,
@@ -127,6 +223,18 @@
 // Example:
 //  Wallet wObj{};
 //  wObj.load("database.json");
+
+void Wallet::load(std::string filename)
+{
+    std::ifstream databaseFile(filename, std::ifstream::binary);
+    json myjson;
+    databaseFile >> myjson;
+
+    for (auto &el : myjson.items())
+    {
+        std::cout << el.key() << " : " << el.value() << "\n";
+    }
+}
 
 // TODO Write a function ,save, that takes one parameter, the path of the file
 //  to write the database to. The function should serialise the Wallet object
