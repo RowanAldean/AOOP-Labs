@@ -150,7 +150,9 @@ int App::run(int argc, char *argv[])
         std::cerr << "Error: invalid entry argument(s)." << std::endl;
         exit(1);
       }
-    }else{
+    }
+    else
+    {
       std::cout << wObj.str() << std::endl;
     }
     exit(0);
@@ -161,7 +163,54 @@ int App::run(int argc, char *argv[])
     break;
 
   case Action::DELETE:
-    throw std::runtime_error("delete not implemented");
+    if (args.count("category"))
+    {
+      std::string output;
+      std::string searchCat = args["category"].as<std::string>();
+      try
+      {
+        Category foundCat = wObj.getCategory(searchCat);
+        if (args.count("item"))
+        {
+          std::string searchItem = args["item"].as<std::string>();
+          if (args.count("entry"))
+          {
+            Item foundItem = foundCat.getItem(searchItem);
+            std::string searchEntry = args["entry"].as<std::string>();
+            foundItem.deleteEntry(searchEntry);
+          }
+          else
+          {
+            foundCat.deleteItem(searchItem);
+          }
+        }
+        else
+        {
+          wObj.deleteCategory(searchCat);
+        }
+      }
+      catch (DoesntExistException<Wallet> &e)
+      {
+        std::cerr << "Error: invalid category argument(s)." << std::endl;
+        exit(1);
+      }
+      catch (DoesntExistException<Category> &e)
+      {
+        std::cerr << "Error: invalid item argument(s)." << std::endl;
+        exit(1);
+      }
+      catch (DoesntExistException<Item> &e)
+      {
+        std::cerr << "Error: invalid entry argument(s)." << std::endl;
+        exit(1);
+      }
+    }
+    else
+    {
+      std::cerr << "Error: missing category, item or entry argument(s)." << std::endl;
+      exit(1);
+    }
+    exit(0);
     break;
 
   default:

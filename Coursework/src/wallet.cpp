@@ -230,8 +230,8 @@ void Wallet::load(const std::string filename)
     json myjson;
     databaseFile >> myjson;
     //So this is 1 category
-    std::cout << myjson.items().begin() << "is the first category element"
-              << "\n";
+    // std::cout << myjson.items().begin() << "is the first category element"
+    //           << "\n";
 
     for (auto &el : myjson.items())
     {
