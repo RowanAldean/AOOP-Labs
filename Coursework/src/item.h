@@ -53,7 +53,7 @@ public:
 
     friend bool operator==(const Item &lhs, const Item &rhs);
     
-    std::string str();
+    std::string str() const;
 
     Item operator+=(const Item& rhs);
     
