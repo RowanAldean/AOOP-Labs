@@ -270,15 +270,15 @@ int App::run(int argc, char *argv[])
                 }
                 if (oldkeyname.empty())
                 {
-                  std::cerr << "Error: invalid entry argument(s)." << oldkeyname << std::endl;
+                  std::cerr << "Error: invalid entry argument(s)." << std::endl;
                   exit(1);
                 }
                 else if(updateKey && newkeyname.empty()){
-                  std::cerr << "Error: invalid entry argument(s)." << oldkeyname << std::endl;
+                  std::cerr << "Error: invalid entry argument(s)." << std::endl;
                   exit(1);
                 }
                 else if(updateValue && newvalue.empty()){
-                  std::cerr << "Error: invalid entry argument(s)." << oldkeyname << std::endl;
+                  std::cerr << "Error: invalid entry argument(s)." << std::endl;
                   exit(1);
                 }
                 //We now have our inputs we begin updating
