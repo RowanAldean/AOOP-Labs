@@ -87,7 +87,10 @@ Category &Wallet::newCategory(const std::string catIdent)
 
 bool Wallet::addCategory(Category &newCat)
 {
-    auto it = std::find(categoryList.begin(), categoryList.end(), newCat);
+    std::string newCatID = newCat.getIdent();
+    auto it = std::find_if(categoryList.begin(), categoryList.end(),
+                           [&newCatID](Category someCategory)
+                           { return someCategory.getIdent() == newCatID; });
     if (it != categoryList.end())
     {
         //found it
@@ -121,7 +124,7 @@ bool Wallet::addCategory(Category &newCat)
 //  wObj.newCategory("categoryIdent");
 //  auto cObj = wObj.getCategory("categoryIdent");
 
-Category Wallet::getCategory(const std::string &catIdent) const
+Category &Wallet::getCategory(const std::string &catIdent)
 {
     auto it = std::find_if(categoryList.begin(), categoryList.end(),
                            [catIdent](Category someCategory)
@@ -270,8 +273,8 @@ void Wallet::save(const std::string filename)
 {
     std::ofstream newfile;
     newfile.open(filename);
-    std::cout << "the file has opened"
-              << "\n";
+    // std::cout << "the file has opened"
+    //           << "\n";
     try
     {
         newfile << str();
@@ -312,15 +315,12 @@ bool operator==(const Wallet &lhs, const Wallet &rhs)
 //  std::string s = wObj.str();
 std::string Wallet::str()
 {
-    std::string output = "{";
+    json jwallet;
     for (Category &cat : categoryList)
     {
-        output += "\"" + cat.getIdent() + "\"" + ":{"; 
-        output += cat.str();
-        output += "},";
+        json catJson = json::parse(cat.str());
+        jwallet.emplace(cat.getIdent(), catJson);
     }
-    output.pop_back(); //remove the trailing comma
-    output += "}";
-    std::cout << "The string output is: " << output << "\n";
-    return output;
+    // std::cout << "The string output is: " << jwallet.dump() << "\n";
+    return jwallet.dump();
 }

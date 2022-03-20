@@ -107,7 +107,10 @@ Item &Category::newItem(const std::string itemIdent)
 //  cObj.addItem(iObj);
 bool Category::addItem(Item &newItem)
 {
-    auto it = std::find(itemList.begin(), itemList.end(), newItem);
+    std::string newID = newItem.getIdent();
+    auto it = std::find_if(itemList.begin(), itemList.end(),
+                           [&newID](Item &someItem)
+                           { return someItem.getIdent() == newID; });
     if (it != itemList.end())
     {
         //found it
@@ -116,6 +119,7 @@ bool Category::addItem(Item &newItem)
         // I implemented addition between items to merge entry lists together and retain the values for the lhs.
         itemList.at(index) = newItem;
         //The above keeps the newItem values (if there are duplicates), otherwise combines the entry lists.
+        std::cout << itemList.at(index).str() << "has been done in addItem" << std::endl;
         return false;
     }
     else
@@ -177,6 +181,7 @@ bool Category::deleteItem(const std::string itemIdent)
     {
         //found it
         itemList.erase(it);
+        std::cout << "Deleted an item" << std::endl;
         return true;
     }
     else
@@ -196,20 +201,28 @@ bool Category::deleteItem(const std::string itemIdent)
 //  if(cObj1 == cObj2) {
 //    ...
 //  }
-bool operator==(const Category& lhs, const Category& rhs){
-    if((lhs.identifier == rhs.identifier) && (lhs.itemList == rhs.itemList)){
+bool operator==(const Category &lhs, const Category &rhs)
+{
+    if ((lhs.identifier == rhs.identifier) && (lhs.itemList == rhs.itemList))
+    {
         return true;
     }
     return false;
 }
 
-Category Category::operator+=(const Category& rhs){
-    itemList.insert(rhs.itemList.end(), rhs.itemList.begin(), rhs.itemList.end());
+Category Category::operator+=(const Category &rhs)
+{
+    for (auto &item : rhs.itemList)
+    {
+        Item newItem = (Item) item;
+        addItem(newItem);
+    }
     return *this;
 }
 
 //Implementing addition for items. The item on the left hand side will keep it's entry values.
-Category operator+(Category base, const Category& newsource){
+Category operator+(Category base, const Category &newsource)
+{
     base += newsource;
     return base;
 }
@@ -222,14 +235,14 @@ Category operator+(Category base, const Category& newsource){
 // Example:
 //  Category cObj{"categoryIdent"};
 //  std::string s = cObj.str();
-std::string Category::str(){
-    std::string output;
-    for(Item& something: itemList){
-        output += "\"" + something.getIdent() + "\"" + ":";
-        output += something.str();
-        output += ",";
+std::string Category::str()
+{
+    json jcat;
+    for (Item &something : itemList)
+    {
+        json jsonItem = json::parse(something.str());
+        jcat.emplace(something.getIdent(), jsonItem);
     }
-    output.pop_back();
-    std::cout << identifier << " category has a string: " << output << std::endl;
-    return output;
+    // std::cout << identifier << " category has a string: " << jcat.dump() << std::endl;
+    return jcat.dump();
 }

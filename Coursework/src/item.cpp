@@ -2,7 +2,7 @@
 // CSC371 Advanced Object Oriented Programming (2021/22)
 // Department of Computer Science, Swansea University
 //
-// Author: <STUDENT NUMBER>
+// Author: 973765
 //
 // Canvas: https://canvas.swansea.ac.uk/courses/24793
 // -----------------------------------------------------
@@ -160,6 +160,6 @@ Item operator+(Item base, const Item& newsource){
 //  std::string s = iObj.str();
 std::string Item::str() const{
     json j_map(entries);
-    std::cout << identifier << " item has a string: " << j_map.dump() << std::endl;
+    // std::cout << identifier << " item has a string: " << j_map.dump() << std::endl;
     return j_map.dump();
 }

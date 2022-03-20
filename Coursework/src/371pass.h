@@ -18,42 +18,69 @@
 #include "lib_cxxopts.hpp"
 #include "wallet.h"
 
-namespace App {
+namespace App
+{
 
-// TODO: Enter your student number here!
-const std::string STUDENT_NUMBER = "973765";
+    // TODO: Enter your student number here!
+    const std::string STUDENT_NUMBER = "973765";
 
-// Enums (short for enumerations) are similar to their Java implementation.
-// It is a user-defined type, used to assign names to internal constants
-// in code, instead of simply passing in integers/strings etc.
-//
-// For example, functions can take a value/constant from a specific enum
-// and use it in a switch statement, doing different things
-//
-// As such, it is a useful way for us to specify information in both a
-// machine and human-readable format.
-//
-// Unlike Java, enums in C++ only map to integer values. You can either let
-// the compiler generate the values automatically, in which it allocates a
-// unique integer (0-indexed). Or, you can set the value by giving the name
-// followed by = <value> (e.g. CREATE=0).
-//
-// This enum specifies the four different values we support in the action
-// program argument.
-enum Action { CREATE, READ, UPDATE, DELETE };
+    // Enums (short for enumerations) are similar to their Java implementation.
+    // It is a user-defined type, used to assign names to internal constants
+    // in code, instead of simply passing in integers/strings etc.
+    //
+    // For example, functions can take a value/constant from a specific enum
+    // and use it in a switch statement, doing different things
+    //
+    // As such, it is a useful way for us to specify information in both a
+    // machine and human-readable format.
+    //
+    // Unlike Java, enums in C++ only map to integer values. You can either let
+    // the compiler generate the values automatically, in which it allocates a
+    // unique integer (0-indexed). Or, you can set the value by giving the name
+    // followed by = <value> (e.g. CREATE=0).
+    //
+    // This enum specifies the four different values we support in the action
+    // program argument.
+    enum Action
+    {
+        CREATE,
+        READ,
+        UPDATE,
+        DELETE
+    };
 
-int run(int argc, char *argv[]);
+    int run(int argc, char *argv[]);
 
-cxxopts::Options cxxoptsSetup();
+    cxxopts::Options cxxoptsSetup();
 
-App::Action parseActionArgument(cxxopts::ParseResult &args);
+    App::Action parseActionArgument(cxxopts::ParseResult &args);
 
-std::string getJSON(Wallet &w);
-std::string getJSON(Wallet &w, const std::string &c);
-std::string getJSON(Wallet &w, const std::string &c, const std::string &i);
-std::string getJSON(Wallet &wObj, const std::string &c, const std::string &i,
-                    const std::string &e);
+    std::string getJSON(Wallet &w);
+    std::string getJSON(Wallet &w, const std::string &c);
+    std::string getJSON(Wallet &w, const std::string &c, const std::string &i);
+    std::string getJSON(Wallet &wObj, const std::string &c, const std::string &i,
+                        const std::string &e);
 
+    // This is used for tokenizing the update action argument
+    // when it's simple identifiers being split.
+    //
+    // Example:
+    // --action oldidentifier:newidentifier
+    // tokenize(argument, ':');
+    // returns {oldidentifier, newidentifier} as a vector.
+    static std::vector<std::string> tokenize(std::string const &str, const char delim)
+    {
+        std::vector<std::string> out;
+        // construct a stream from the string
+        std::stringstream stream(str);
+
+        std::string s;
+        while (std::getline(stream, s, delim))
+        {
+            out.push_back(s);
+        }
+        return out;
+    }
 } // namespace App
 
 #endif // _371PASS_H

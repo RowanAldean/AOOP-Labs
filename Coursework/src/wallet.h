@@ -31,7 +31,7 @@ public:
 
     bool addCategory(Category &catToAdd);
 
-    Category getCategory(const std::string &catIdent) const;
+    Category &getCategory(const std::string &catIdent);
 
     bool deleteCategory(const std::string &catIdent);
 
