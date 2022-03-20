@@ -18,6 +18,7 @@
 class Wallet
 {
 private:
+    //Similarly to categories, a vector seemed most sensible; however I understand why a map may have been chosen.
     std::vector<Category> categoryList;
 
 public:
@@ -37,11 +38,11 @@ public:
 
     void load(const std::string fileName);
 
-    void save(const std::string fileName);
+    void save(const std::string fileName) const;
 
     friend bool operator==(const Wallet &lhs, const Wallet &rhs);
 
-    std::string str();
+    std::string str() const;
 };
 
 #endif // WALLET_H

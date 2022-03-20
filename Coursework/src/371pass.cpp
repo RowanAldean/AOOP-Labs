@@ -2,7 +2,7 @@
 // CSC371 Advanced Object Oriented Programming (2021/22)
 // Department of Computer Science, Swansea University
 //
-// Author: <STUDENT NUMBER>
+// Author: 973765
 //
 // Canvas: https://canvas.swansea.ac.uk/courses/24793
 // -----------------------------------------------------
@@ -15,6 +15,30 @@
 #include "371pass.h"
 #include "lib_cxxopts.hpp"
 #include "wallet.h"
+
+// This is used for tokenizing the update action argument
+// when it's simple identifiers being split. It could have been added
+// in the header file (and it was) but with the order of includes and the design provided
+// it would be declared 2x (both in main.cpp and in here as a result of include 371pass.h).
+// This was not my design choice and was the framework provided.
+//
+// Example:
+// --action oldidentifier:newidentifier
+// tokenize(argument, ':');
+// returns {oldidentifier, newidentifier} as a vector.
+static std::vector<std::string> tokenize(std::string const &str, const char delim)
+{
+  std::vector<std::string> out;
+  // construct a stream from the string
+  std::stringstream stream(str);
+
+  std::string s;
+  while (std::getline(stream, s, delim))
+  {
+    out.push_back(s);
+  }
+  return out;
+}
 
 // TODO Complete this function. You have been provided some skeleton code which
 //  retrieves the database file name from cxxopts.
@@ -37,23 +61,23 @@
 int App::run(int argc, char *argv[])
 {
   auto options = App::cxxoptsSetup();
-  auto args = options.parse(argc, argv);
-
-  // Print the help usage if requested
-  if (args.count("help"))
-  {
-    std::cout << options.help() << '\n';
-    return 0;
-  }
-
-  // Open the database and construct the Wallet
-  const std::string db = args["db"].as<std::string>();
-  Wallet wObj{};
-  // Only uncomment this once you have implemented the load function!
-  wObj.load(db);
-
   try
   {
+    auto args = options.parse(argc, argv);
+
+    // Print the help usage if requested
+    if (args.count("help"))
+    {
+      std::cout << options.help() << '\n';
+      return 0;
+    }
+
+    // Open the database and construct the Wallet
+    const std::string db = args["db"].as<std::string>();
+    Wallet wObj{};
+    // Only uncomment this once you have implemented the load function!
+    wObj.load(db);
+
     const Action a = parseActionArgument(args);
 
     switch (a)
@@ -65,12 +89,12 @@ int App::run(int argc, char *argv[])
         {
           //Try to get category (this is needed!)
           const std::string categoryName = args["category"].as<std::string>();
-          Category newCategory(categoryName);
+          Category& ourNewCategory = wObj.newCategory(categoryName);
           //Check if there's an item to add
           if (args.count("item"))
           {
             const std::string itemName = args["item"].as<std::string>();
-            Item newItem(itemName);
+            Item& ourNewItem = ourNewCategory.newItem(itemName);
             if (args.count("entry"))
             {
               std::string entryString = args["entry"].as<std::string>();
@@ -90,19 +114,27 @@ int App::run(int argc, char *argv[])
               }
               //Set the key to the first thing before a comma (or the whole string).
               entryKey = strings.at(0);
-              newItem.addEntry(entryKey, entryValue);
-              newCategory.addItem(newItem);
-              wObj.addCategory(newCategory);
+              ourNewItem.addEntry(entryKey, entryValue);
+              ourNewCategory.addItem(ourNewItem);
+              wObj.addCategory(ourNewCategory);
             }
             else
             {
-              newCategory.addItem(newItem);
-              wObj.addCategory(newCategory);
+              ourNewCategory.addItem(ourNewItem);
+              wObj.addCategory(ourNewCategory);
             }
           }
           else
           {
-            wObj.addCategory(newCategory);
+            if (args.count("entry"))
+            {
+              std::cerr << "Error: missing item argument(s)." << std::endl;
+              exit(1);
+            }
+            else
+            {
+              wObj.addCategory(ourNewCategory);
+            }
           }
         }
         catch (DoesntExistException<Wallet> &e)
@@ -118,6 +150,11 @@ int App::run(int argc, char *argv[])
         catch (DoesntExistException<Item> &e)
         {
           std::cerr << "Error: invalid entry argument(s)." << std::endl;
+          exit(1);
+        }
+        catch (cxxopts::missing_argument_exception &e)
+        {
+          std::cerr << "Error: missing argument(s) following a valid flag." << std::endl;
           exit(1);
         }
       }
@@ -186,6 +223,11 @@ int App::run(int argc, char *argv[])
           std::cerr << "Error: invalid entry argument(s)." << std::endl;
           exit(1);
         }
+        catch (cxxopts::missing_argument_exception &e)
+        {
+          std::cerr << "Error: missing argument(s) following a valid flag." << std::endl;
+          exit(1);
+        }
       }
       else
       {
@@ -215,7 +257,7 @@ int App::run(int argc, char *argv[])
               std::cerr << "Error: missing item argument(s)." << std::endl;
               exit(1);
             }
-            //UPDATE THE CATEGORY
+            //UPDATE THE CATEGORY IDENTIFIER
             std::vector<std::string> splitArgs = tokenize(catArg, ':');
             std::string oldCat = splitArgs.at(0);
             std::string newCat = splitArgs.at(1);
@@ -236,13 +278,11 @@ int App::run(int argc, char *argv[])
 
                 std::vector<std::string> splitEntryArgs;
                 std::stringstream sstream(entryArg);
-                std::string oldkeyname;
-                std::string newkeyname;
-                std::string newvalue;
-
+                std::string oldkeyname, newkeyname, newvalue;
+                //USE FLAGS WHEN PARSING THE ITEM ARGUMENT.
                 bool updateKey = false;
                 bool updateValue = false;
-                for (int i = 0; i < entryArg.length(); i++)
+                for (unsigned int i = 0; i < entryArg.length(); i++)
                 {
                   char c = entryArg[i];
                   if (c == ':')
@@ -273,15 +313,17 @@ int App::run(int argc, char *argv[])
                   std::cerr << "Error: invalid entry argument(s)." << std::endl;
                   exit(1);
                 }
-                else if(updateKey && newkeyname.empty()){
+                else if (updateKey && newkeyname.empty())
+                {
                   std::cerr << "Error: invalid entry argument(s)." << std::endl;
                   exit(1);
                 }
-                else if(updateValue && newvalue.empty()){
+                else if (updateValue && newvalue.empty())
+                {
                   std::cerr << "Error: invalid entry argument(s)." << std::endl;
                   exit(1);
                 }
-                //We now have our inputs we begin updating
+                //We now have our inputs we begin updating based on the above flags
                 else if (updateKey && updateValue)
                 {
                   std::string oldvalue = foundItem.getEntry(oldkeyname);
@@ -298,13 +340,14 @@ int App::run(int argc, char *argv[])
                   foundItem.deleteEntry(oldkeyname);
                   foundItem.addEntry(newkeyname, oldvalue);
                 }
+                // The formats we need to be able to handle
                 // oldkeyname:newkeyname
                 // oldkeyname,newvalue
                 // oldkeyname: newkeyname,newvalue
               }
               else
               {
-                //UPDATE THE ITEM
+                //UPDATE THE ITEM IDENTIFIER
                 std::vector<std::string> splitArgs = tokenize(itemArg, ':');
                 std::string oldItem = splitArgs.at(0);
                 std::string newItem = splitArgs.at(1);
@@ -327,6 +370,11 @@ int App::run(int argc, char *argv[])
         catch (DoesntExistException<Item> &e)
         {
           std::cerr << "Error: invalid entry argument(s)." << std::endl;
+          exit(1);
+        }
+        catch (cxxopts::missing_argument_exception &e)
+        {
+          std::cerr << "Error: missing argument(s) following a valid flag." << std::endl;
           exit(1);
         }
       }
@@ -394,6 +442,11 @@ int App::run(int argc, char *argv[])
           std::cerr << "Error: invalid entry argument(s)." << std::endl;
           exit(1);
         }
+        catch (cxxopts::missing_argument_exception &e)
+        {
+          std::cerr << "Error: missing argument(s) following a valid flag." << std::endl;
+          exit(1);
+        }
       }
       else
       {
@@ -425,6 +478,11 @@ int App::run(int argc, char *argv[])
   catch (cxxopts::option_not_exists_exception &e)
   {
     std::cerr << "Error: invalid action argument(s)." << std::endl;
+    exit(1);
+  }
+  catch (cxxopts::missing_argument_exception &e)
+  {
+    std::cerr << "Error: missing argument(s) following a valid flag." << std::endl;
     exit(1);
   }
   return 0;

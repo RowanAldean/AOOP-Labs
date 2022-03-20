@@ -2,7 +2,7 @@
 // CSC371 Advanced Object Oriented Programming (2021/22)
 // Department of Computer Science, Swansea University
 //
-// Author: <STUDENT NUMBER>
+// Author: 973765
 //
 // Canvas: https://canvas.swansea.ac.uk/courses/24793
 // -----------------------------------------------------
@@ -22,7 +22,7 @@ Category::Category(std::string ident) : identifier(ident), itemList() {}
 // Example:
 //  Category c{"categoryIdent"};
 //  auto size = c.size();
-unsigned int Category::size()
+unsigned int Category::size() const
 {
     return itemList.size();
 }
@@ -33,7 +33,7 @@ unsigned int Category::size()
 // Example:
 //  Category c{"categoryIdent"};
 //  auto empty = c.empty();
-bool Category::empty()
+bool Category::empty() const
 {
     return itemList.empty();
 }
@@ -44,7 +44,7 @@ bool Category::empty()
 // Example:
 //  Category cObj{"categoryIdent"};
 //  auto ident = cObj.getIdent();
-std::string Category::getIdent()
+std::string Category::getIdent() const
 {
     return identifier;
 }
@@ -119,7 +119,6 @@ bool Category::addItem(Item &newItem)
         // I implemented addition between items to merge entry lists together and retain the values for the lhs.
         itemList.at(index) = newItem;
         //The above keeps the newItem values (if there are duplicates), otherwise combines the entry lists.
-        std::cout << itemList.at(index).str() << "has been done in addItem" << std::endl;
         return false;
     }
     else
@@ -156,7 +155,7 @@ Item &Category::getItem(const std::string itemIdent)
     {
         //found it
         auto index = std::distance(itemList.begin(), it);
-        return itemList.at(index);
+        return itemList.at(index);;
     }
     else
     {
@@ -210,6 +209,10 @@ bool operator==(const Category &lhs, const Category &rhs)
     return false;
 }
 
+// These operator overloads represent how to merge two category objects
+// I have learned that overloading this operator as opposed to the "append" method
+// is not best practice as it changes the meaning of what += is typically.
+// There is nothing inherently wrong about this approach, it's just not advised on SO.
 Category Category::operator+=(const Category &rhs)
 {
     for (auto &item : rhs.itemList)
@@ -235,10 +238,13 @@ Category operator+(Category base, const Category &newsource)
 // Example:
 //  Category cObj{"categoryIdent"};
 //  std::string s = cObj.str();
-std::string Category::str()
+std::string Category::str() const
 {
     json jcat;
-    for (Item &something : itemList)
+    //Doing this means we can use the copy value as an iterator and thus
+    //keep our function as a const (no altering of real data).
+    std::vector<Item> ourList = itemList;
+    for (Item &something : ourList)
     {
         json jsonItem = json::parse(something.str());
         jcat.emplace(something.getIdent(), jsonItem);

@@ -21,16 +21,18 @@ class Category
 {
 private:
     std::string identifier;
+    //A vector was used as the itemID -> itemObj relationship is implemented in an Item object
+    //thus there is no real need for a map (despite the faster lookup and easier JSON implementation).
     std::vector<Item> itemList;
 
 public:
     Category(std::string identifier);
 
-    unsigned int size();
+    unsigned int size() const;
 
-    bool empty();
+    bool empty() const;
 
-    std::string getIdent();
+    std::string getIdent() const;
 
     void setIdent(std::string newIdent);
 
@@ -44,7 +46,7 @@ public:
 
     friend bool operator==(const Category &lhs, const Category &rhs);
 
-    std::string str();
+    std::string str() const;
 
     Category operator+=(const Category& rhs);
     

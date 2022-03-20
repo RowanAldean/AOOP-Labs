@@ -60,27 +60,6 @@ namespace App
     std::string getJSON(Wallet &w, const std::string &c, const std::string &i);
     std::string getJSON(Wallet &wObj, const std::string &c, const std::string &i,
                         const std::string &e);
-
-    // This is used for tokenizing the update action argument
-    // when it's simple identifiers being split.
-    //
-    // Example:
-    // --action oldidentifier:newidentifier
-    // tokenize(argument, ':');
-    // returns {oldidentifier, newidentifier} as a vector.
-    static std::vector<std::string> tokenize(std::string const &str, const char delim)
-    {
-        std::vector<std::string> out;
-        // construct a stream from the string
-        std::stringstream stream(str);
-
-        std::string s;
-        while (std::getline(stream, s, delim))
-        {
-            out.push_back(s);
-        }
-        return out;
-    }
 } // namespace App
 
 #endif // _371PASS_H

@@ -2,7 +2,7 @@
 // CSC371 Advanced Object Oriented Programming (2021/22)
 // Department of Computer Science, Swansea University
 //
-// Author: <STUDENT NUMBER>
+// Author: 973765
 //
 // Canvas: https://canvas.swansea.ac.uk/courses/24793
 // -----------------------------------------------------
@@ -269,12 +269,10 @@ void Wallet::load(const std::string filename)
 //  wObj.load("database.json");
 //  ...
 //  wObj.save("database.json");
-void Wallet::save(const std::string filename)
+void Wallet::save(const std::string filename) const
 {
     std::ofstream newfile;
     newfile.open(filename);
-    // std::cout << "the file has opened"
-    //           << "\n";
     try
     {
         newfile << str();
@@ -313,14 +311,13 @@ bool operator==(const Wallet &lhs, const Wallet &rhs)
 // Example:
 //  Wallet wObj{};
 //  std::string s = wObj.str();
-std::string Wallet::str()
-{
+std::string Wallet::str() const {
+    std::vector<Category> ourList = categoryList;
     json jwallet;
-    for (Category &cat : categoryList)
+    for (Category &cat : ourList)
     {
         json catJson = json::parse(cat.str());
         jwallet.emplace(cat.getIdent(), catJson);
     }
-    // std::cout << "The string output is: " << jwallet.dump() << "\n";
     return jwallet.dump();
 }

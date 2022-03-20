@@ -22,7 +22,7 @@ Item::Item(std::string ident) : identifier(ident), entries(){};
 // Example:
 //  Item iObj{"identIdent"};
 //  auto size = iObj.size();
-unsigned int Item::size()
+unsigned int Item::size() const
 {
     return entries.size();
 };
@@ -33,7 +33,7 @@ unsigned int Item::size()
 // Example:
 //  Item iObj{"identIdent"};
 //  auto empty = iObj.empty();
-bool Item::empty()
+bool Item::empty() const
 {
     return entries.empty();
 };
@@ -52,7 +52,7 @@ void Item::setIdent(std::string newIdent)
 // Example:
 //  Item iObj{"identIdent"};
 //  auto ident = iObj.getIdent();
-std::string Item::getIdent()
+std::string Item::getIdent() const
 {
     return identifier;
 };
@@ -86,10 +86,13 @@ bool Item::addEntry(std::string key, std::string value)
 //  Item iObj{"identIdent"};
 //  iObj.addEntry("key", "value");
 //  auto value = iObj.getEntry("key");
-std::string Item::getEntry(std::string keyToGet)
+std::string Item::getEntry(std::string keyToGet) const
 {
-    std::map<std::string, std::string>::iterator it = entries.find(keyToGet);
-    if (it != entries.end())
+    //Creating a stack copy means we don't risk changing member data, thus
+    //can keep the function const.
+    std::map<std::string, std::string> ourMap = entries;
+    std::map<std::string, std::string>::iterator it = ourMap.find(keyToGet);
+    if (it != ourMap.end())
     {
         //found
         return it->second;
@@ -99,6 +102,7 @@ std::string Item::getEntry(std::string keyToGet)
         throw DoesntExistException<Item>(keyToGet, identifier);
     }
 }
+
 // TODO Write a function, deleteEntry, that takes one parameter, an entry
 //  key, deletes it from the container, and returns true if the Item was
 //  deleted. If no entry exists, throw an appropriate exception.
@@ -139,6 +143,8 @@ bool operator==(const Item& lhs, const Item& rhs){
     return false;
 }
 
+// See the comment in the category.cpp implementation - this is the same underlying idea
+// of merging items but easier as we can simply use the insert method.
 Item Item::operator+=(const Item& rhs){
     entries.insert(rhs.entries.begin(), rhs.entries.end());
     return *this;
